@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.slim.min.js" integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script> 
+<meta charset="utf-8" /> 
+<title>Gerador de Etiqueta</title>
+<style type="text/css">
+    @page {
+            size: A4 landscape;
+    }
+    body {
+            font-family: verdana, arial, sans-serif ;
+            font-size: 12px ;
+            }
+    #maintable {
+        border-spacing: 15px;
+        display: none;
+    }
+    td.voucher  {
+            border-top: 1px dotted #999999 ;
+            border-bottom: 1px dotted #999999 ;
+            border-left: 1px dotted  #999999;
+            border-right: 1px dotted  #999999;
+            padding: 20px 20px 10px 10px;
+            text-align: left ;
+            background-position: right top;
+            background-size: 175px 60px;
+            background-repeat: no-repeat;
+            background-origin: content-box;
+    }
+    tr.voucher {
+            page-break-inside: avoid;
+       }
+    #tpl {
+        display: none;
+    }
+@media print {
+    #generator {
+        display: none;
+    }
+    @page {
+            size: A4 landscape;
+            background-color: lightgreen;
+
+    }
+}
+#qrcode {
+    right: 40%;
+}
+label {
+  display: block;
+  font-weight: bold;
+  }
+</style>
+</head>
+
+<body>
+<div id="generator">
+<h1>Gerador de Etiqueta</h1>
+<p><strong>Usar no Chrome, Edge, chromium</strong> resultado sera melhor da impressão</p>
+
+<h2>Gerador de Volumes de Caixas:</h2>
+<label for="startingValue">Começo do Volume :</label>
+<input type="text" id="startingValue" />
+<label for="endingValue">Fim do Volume :</label>
+<input type="text" id="endingValue" />
+<button onclick="runCounter()">Gerar</button>
+
+<div class="content-pane">
+  <div id="progression-pane">
+    </div>
+  </div>
+
+<p>Nome do Cliente </p>
+<input id="cliente" type="text" placeholder="nome do cliente" style="width:40%" /><button type="button" onclick="getInputValue();">Salvar</button><br />
+
+
+<form id="form">
+<textarea id="vouchers" rows="40">
+
+
+</textarea>
+<button type="button" id="button">Gerar Etiqueta</button>
+<button type="button" id="print" disabled>Imprimir</button>
+</form>
+
+</div>
+<div id="tpl">
+        <img src="https://github.com/KenyOS/pfsense-captive-portal/raw/master/captiveportal-logo.png" style=""/><p id="code" style="margin-left: 90%;"></p>
+       <h4>Cliente:</h4><h1 id="hcliente"></h1><br>
+       
+       <h4>NF:</h4>
+       <h4 id="qr"></h4>
+       <br />
+       <br />
+       <br />
+       <br />
+      
+       <div id="qrcode"></div>
+   </div>
+
+<table id="maintable">
+<tbody id=table>
+</tbody>
+</table>
+
+<script>
+/*****
+ * When the "show me!" button gets clicked, 
+ *   there's a few things we do: get the values of
+ *   the inputs, loop from the starting value to 
+ *   the ending value by a given increment (default
+ *   increment of two), and output the result to a div.
+ *****/
+runCounter = function() {
+  // This is the location we'll put the result
+  var contentPane = document.getElementById("progression-pane");
+  // This will be the output string
+  var contentString = "";
+  
+  // retrieve the values given AND MAKE THEM
+  //  INTEGERS! We could do floats, but it's 
+  //  darn important to make them numbers.
+  var startingValue = parseInt(document.getElementById("startingValue").value);
+  var endingValue = parseInt(document.getElementById("endingValue").value);
+  
+
+  if (startingValue && endingValue) {
+    // So long as we actually HAVE a staring and ending value...
+
+    contentString += "<p>Entradas gerado para " + endingValue + " Caixas:</p>";
+    contentString += "<p>Copiar os valores gerados e Colar no campo de Texto Abaixo</p>";
+    for (i = startingValue; i <= endingValue; i += 1) {
+      // If we are here, we have all three: start, end and increment
+      contentString +=  i + "/" + endingValue + "<br/>";
+    }
+    contentString += "";
+    // We've finished formatting the string, 
+    //  let's output it to the proper div.
+    //  Note that I'm using innerHTML, 
+    //   document.writeln is considered bad.
+    
+    contentPane.innerHTML = contentString;
+  }
+
+}
+
+    function getQueryVariable(variable)
+{
+       var query = window.location.search.substring(1);
+       var vars = query.split("&");
+       for (var i=0;i<vars.length;i++) {
+               var pair = vars[i].split("=");
+               if(pair[0] == variable){return pair[1];}
+       }
+       return(false);
+}
+
+        function getInputValue(){
+            // Selecting the input element and get its value 
+            var inputVal = document.getElementById("cliente").value;
+
+        //Display Cliente Name on H1
+        document.getElementById("hcliente").innerHTML = inputVal;
+
+        //Display custom QRCode
+        //document.getElementById("qr").innerHTML = getQueryVariable("idprocesso");
+
+        }
+var idprocesso = getQueryVariable("idprocesso");
+var qrcode = new QRCode("qrcode", {
+    text: "https://airtable.com/shresALEhI6Vf9MgV" + "?prefill_ID=" + idprocesso,
+    width: 128,
+    height: 128,
+    colorDark : "#000000",
+    colorLight : "#ffffff",
+    correctLevel : QRCode.CorrectLevel.H
+
+});
+
+function makeCode () {
+  var clienteText = document.getElementById("cliente");    
+  var elText = document.getElementById("qr");
+  
+  if (!elText.value) {
+    
+    elText.focus();
+    return;
+  }
+  
+  qrcode.makeCode(elText.value);
+}
+
+makeCode();
+
+$("#text").
+  on("blur", function () {
+    makeCode();
+  }).
+  on("keydown", function (e) {
+    if (e.keyCode == 13) {
+      makeCode();
+    }
+  });
+
+
+document.getElementById("print").addEventListener('click',printEm);
+document.getElementById("button").addEventListener('click',buildEm);
+document.getElementById("vouchers").addEventListener('focus',clearEm);
+
+function clearEm() {
+    var vouchers=document.getElementById("vouchers");
+    if(!vouchers.value.search("\" voucher1")) {
+        vouchers.value="";
+    }
+}
+
+function printEm() {
+    window.print();
+}
+
+function buildEm() {
+    var vouchers=document.getElementById("vouchers").value.trim().split('\n');
+
+    if (vouchers.length%2) {
+        alert("Deve ter no minimo duas entrada no bloco.");
+        return 0;
+    }
+
+    var tpl=document.getElementById("tpl");
+    var code=document.getElementById("code");
+    var table=document.getElementById("table");
+    var tr;
+
+
+    document.getElementById("maintable").style.display="none";
+    document.getElementById("table").innerHTML="";
+
+    for(var i=0;i<vouchers.length;i++) {
+        if(!(i%2)) {
+            tr=document.createElement("tr");
+            tr.className="voucher";
+        }
+
+        // pfsense prints the voucher codes as something like
+        //   " aaaaaaaaaa"
+        // into the csv -> account for this!
+        code.innerHTML=vouchers[i].replace(/"/g,'').trim();
+
+        var foo = tpl.cloneNode(true);
+        foo.style.display="block";
+        foo.removeAttribute("id");
+        var td=document.createElement("td");
+        td.className="voucher";
+        td.appendChild(foo);
+        tr.appendChild(td);
+
+        if((i%2)) {
+            table.appendChild(tr);
+        }
+
+    }
+    document.getElementById("maintable").style.display="block";
+    document.getElementById("print").disabled = false;
+}
+
+</script>
+
+</body>
+</html>
