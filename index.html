@@ -69,8 +69,7 @@ label {
     </div>
   </div>
 
-<p>Nome do Cliente </p>
-<input id="cliente" type="text" placeholder="nome do cliente" style="width:40%" /><button type="button" onclick="getInputValue();">Salvar</button><br />
+
 
 
 <form id="form">
@@ -173,7 +172,7 @@ var clienteVal = getQueryVariable("cliente");
 document.getElementById("nomedocliente").innerHTML = decodeURIComponent(clienteVal);
 var idprocesso = getQueryVariable("idprocesso");
 var qrcode = new QRCode("qrcode", {
-    text: "http://192.168.1.1:8004/?zone=techmeter_expedicao" + "&idprocesso" + idprocesso + "&cliente" + clienteVal,
+    text: "http://192.168.1.1:8004/?zone=techmeter_expedicao" + "&idprocesso=" + idprocesso + "&cliente=" + clienteVal,
     width: 128,
     height: 128,
     colorDark : "#000000",
