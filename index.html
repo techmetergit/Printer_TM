@@ -45,9 +45,7 @@
 
     }
 }
-#qrcode {
-    right: 40%;
-}
+
 label {
   display: block;
   font-weight: bold;
@@ -57,9 +55,8 @@ label {
 
 <body>
 <div id="generator">
-<h1>Gerador de Etiqueta</h1>
-<p><strong>Usar no Chrome, Edge, chromium</strong> resultado sera melhor da impressão</p>
-
+<img src="https://github.com/KenyOS/pfsense-captive-portal/raw/master/captiveportal-logo.png" style="margin-left: 80%;"/>
+<h1>Gerador de Etiqueta </h1>
 <h2>Gerador de Volumes de Caixas:</h2>
 <label for="startingValue">Começo do Volume :</label>
 <input type="text" id="startingValue" />
@@ -77,7 +74,7 @@ label {
 
 
 <form id="form">
-<textarea id="vouchers" rows="40">
+<textarea id="vouchers" value="1" rows="20">
 
 
 </textarea>
@@ -87,17 +84,19 @@ label {
 
 </div>
 <div id="tpl">
-        <img src="https://github.com/KenyOS/pfsense-captive-portal/raw/master/captiveportal-logo.png" style=""/><p id="code" style="margin-left: 90%;"></p>
-       <h4>Cliente:</h4><h1 id="hcliente"></h1><br>
+        <p><img src="https://github.com/KenyOS/pfsense-captive-portal/raw/master/captiveportal-logo.png" style="float:left;margin-right: 25%;"> <div style="text-align:center;"><span style="">Rua Pedralia, Nº 70 - Bairro Gumercindo</span><br><span> Sao Paulo/SP - CEP-04130-080</span><br><span> www.techmeter.com.br </span> <br> <span>TEL: (11)5071-1630</span></p><br><span style="font-size: 32px;float:left;margin-right: 68%;font-weight: bold;">Cliente:</span></div>
+        <p id="code" style="position: relative;font-weight: bold;font-size: 24px;bottom: 23px;" ></p>
        
-       <h4>NF:</h4>
+       <h1 id="nomedocliente" style="font-size: 32px;"></h1>
+       <p>⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀</p>
+       <h4 style="font-size: 32px;">NF:</h4>
        <h4 id="qr"></h4>
        <br />
        <br />
        <br />
        <br />
       
-       <div id="qrcode"></div>
+       <div id="qrcode" ></div>
    </div>
 
 <table id="maintable">
@@ -129,19 +128,21 @@ runCounter = function() {
   if (startingValue && endingValue) {
     // So long as we actually HAVE a staring and ending value...
 
-    contentString += "<p>Entradas gerado para " + endingValue + " Caixas:</p>";
-    contentString += "<p>Copiar os valores gerados e Colar no campo de Texto Abaixo</p>";
     for (i = startingValue; i <= endingValue; i += 1) {
       // If we are here, we have all three: start, end and increment
-      contentString +=  i + "/" + endingValue + "<br/>";
+      contentString +=  i + "/" + endingValue + "\n";
     }
+    if (endingValue % 2 === 1  ) {
+        contentString +=  "⠀" + "\n";
+    }
+
     contentString += "";
     // We've finished formatting the string, 
     //  let's output it to the proper div.
     //  Note that I'm using innerHTML, 
     //   document.writeln is considered bad.
     
-    contentPane.innerHTML = contentString;
+    $("#vouchers").val(contentString);
   }
 
 }
@@ -159,15 +160,17 @@ runCounter = function() {
 
         function getInputValue(){
             // Selecting the input element and get its value 
-            var inputVal = document.getElementById("cliente").value;
+            var clienteVal = getQueryVariable("cliente");
 
         //Display Cliente Name on H1
-        document.getElementById("hcliente").innerHTML = inputVal;
+        document.getElementById("nomedocliente").innerHTML = clienteVal;
 
         //Display custom QRCode
         //document.getElementById("qr").innerHTML = getQueryVariable("idprocesso");
 
         }
+var clienteVal = getQueryVariable("cliente");
+document.getElementById("nomedocliente").innerHTML = decodeURIComponent(clienteVal);
 var idprocesso = getQueryVariable("idprocesso");
 var qrcode = new QRCode("qrcode", {
     text: "https://airtable.com/shresALEhI6Vf9MgV" + "?prefill_ID=" + idprocesso,
@@ -224,7 +227,7 @@ function buildEm() {
     var vouchers=document.getElementById("vouchers").value.trim().split('\n');
 
     if (vouchers.length%2) {
-        alert("Deve ter no minimo duas entrada no bloco.");
+        alert("Deve ser par.");
         return 0;
     }
 
