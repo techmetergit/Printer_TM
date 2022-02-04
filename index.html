@@ -14,7 +14,7 @@
             font-size: 12px ;
             }
     #maintable {
-        border-spacing: 15px;
+        /*border-spacing: 15px;*/
         display: none;
     }
     td.voucher  {
@@ -22,7 +22,7 @@
             border-bottom: 1px dotted #999999 ;
             border-left: 1px dotted  #999999;
             border-right: 1px dotted  #999999;
-            padding: 20px 20px 10px 10px;
+            /padding: 20px 20px 10px 10px;
             text-align: left ;
             background-position: right top;
             background-size: 175px 60px;
@@ -169,7 +169,7 @@ runCounter = function() {
 
         }
 var clienteVal = getQueryVariable("cliente");
-document.getElementById("nomedocliente").innerHTML = decodeURIComponent(clienteVal);
+document.getElementById("nomedocliente").innerHTML = decodeURIComponent(clienteVal).toUpperCase();
 var idprocesso = getQueryVariable("idprocesso");
 var qrcode = new QRCode("qrcode", {
     text: "http://192.168.1.1:8004/?zone=techmeter_expedicao" + "&idprocesso=" + idprocesso + "&cliente=" + clienteVal,
